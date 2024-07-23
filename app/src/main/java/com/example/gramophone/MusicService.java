@@ -14,10 +14,12 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.media.session.MediaButtonReceiver;
 
 import java.util.ArrayList;
 
@@ -55,6 +57,59 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public void onCreate() {
         super.onCreate();
         mediaSessionCompat = new MediaSessionCompat(getBaseContext(), "My Audio");
+
+        //code responsible for handling headphones button events
+        mediaSessionCompat.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mediaSessionCompat.setCallback(new MediaSessionCompat.Callback() {
+            @Override
+            public void onPlay() {
+                super.onPlay();
+                playPauseBtnClicked();
+            }
+
+            @Override
+            public void onPause() {
+                super.onPause();
+                playPauseBtnClicked();
+            }
+
+            @Override
+            public void onSkipToNext() {
+                super.onSkipToNext();
+                nextBtnClicked();
+                // Handle skip to next
+                // For example, switch to the next track
+            }
+
+            @Override
+            public void onSkipToPrevious() {
+                super.onSkipToPrevious();
+                previousBtnClicked();
+                // Handle skip to previous
+                // For example, switch to the previous track
+            }
+
+            @Override
+            public void onStop() {
+                super.onStop();
+                mediaPlayer.stop();
+                stopSelf();
+            }
+        });
+
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
+                .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                        PlaybackStateCompat.ACTION_PLAY |
+                        PlaybackStateCompat.ACTION_PAUSE |
+                        PlaybackStateCompat.ACTION_STOP)
+                .setState(PlaybackStateCompat.STATE_STOPPED, 0, 1.0f)
+                .build();
+        mediaSessionCompat.setPlaybackState(state);
+
+        mediaSessionCompat.setActive(true);
     }
 
     @Nullable
@@ -83,6 +138,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                     break;
             }
         }
+        //code responsible for handling headphones button events
+        MediaButtonReceiver.handleIntent(mediaSessionCompat, intent);
         return START_STICKY;
     }
 
@@ -259,5 +316,12 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         if (actionPlaying != null) {
             actionPlaying.playPauseBtnClicked();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mediaPlayer.release();
+        mediaSessionCompat.release();
     }
 }
