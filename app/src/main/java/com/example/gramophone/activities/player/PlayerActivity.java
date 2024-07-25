@@ -9,7 +9,9 @@ import static com.example.gramophone.activities.main.SongsAdapter.mFiles;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.palette.graphics.Palette;
+import androidx.viewpager2.widget.ViewPager2;
 
 
 import android.app.Notification;
@@ -33,6 +35,7 @@ import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -55,7 +58,8 @@ import java.util.Random;
 public class PlayerActivity extends AppCompatActivity implements  ActionPlaying, ServiceConnection {
 
     TextView song_name, artist_name, duration_played, duration_total;
-    ImageView cover_art, nextBtn, prevBtn, backBtn, shuffleBtn, repeatBtn;
+//    ImageView cover_art, nextBtn, prevBtn, backBtn, shuffleBtn, repeatBtn;
+    ImageView nextBtn, prevBtn, backBtn, shuffleBtn, repeatBtn;
     FloatingActionButton playPauseBtn;
     SeekBar seekBar;
     int position = -1;
@@ -64,14 +68,21 @@ public class PlayerActivity extends AppCompatActivity implements  ActionPlaying,
     // moved to the service
 //    static MediaPlayer mediaPlayer;
     private Handler handler = new Handler();
-    private Thread playThread, prevThread, nextThread;
     MusicService musicService;
+
+    //
+    ViewPager2 viewPager2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);//usuniecie top bara
         getSupportActionBar().hide();//
+        // setting top notch color
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+
         setContentView(R.layout.activity_player);
         initViews();
         getIntentMethod();
@@ -117,6 +128,41 @@ public class PlayerActivity extends AppCompatActivity implements  ActionPlaying,
         prevBtn.setOnClickListener(v -> prevBtnClicked());
         playPauseBtn.setOnClickListener(v -> playPauseBtnClicked());
         nextBtn.setOnClickListener(v -> nextBtnClicked());
+
+        // handle viewPager
+        setUpViewPager();
+    }
+
+    private void setUpViewPager() {
+        // make list of path
+        ViewPagerAdapter vpAdapter = new ViewPagerAdapter(listSongs, getApplicationContext());
+        viewPager2.setAdapter(vpAdapter);
+        viewPager2.setClipToPadding(false);
+        viewPager2.setClipChildren(false);
+        viewPager2.getChildAt(0).setOverScrollMode(View.OVER_SCROLL_NEVER);
+        viewPager2.setOffscreenPageLimit(2);
+        viewPager2.setCurrentItem(position, false);
+
+        viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
+
+            @Override
+            public void onPageSelected(int pos) {
+                super.onPageSelected(position);
+                position = pos;
+                playNewSong();
+//                Toast.makeText(getApplicationContext(),"Selected_Page" +  String.valueOf(position), Toast.LENGTH_LONG).show();
+//                Log.e("Selected_Page", String.valueOf(position));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+            }
+        });
     }
 
     @Override
@@ -174,6 +220,7 @@ public class PlayerActivity extends AppCompatActivity implements  ActionPlaying,
         artist_name.setText(listSongs.get(position).getArtist());
         seekBar.setMax(musicService.getDuration() / 1000);
         musicService.onCompleted();
+        viewPager2.setCurrentItem(position);
         if(msWasPlaying){
             musicService.showNotification(R.drawable.ic_pause);
             playPauseBtn.setBackgroundResource(R.drawable.ic_pause);
@@ -233,7 +280,7 @@ public class PlayerActivity extends AppCompatActivity implements  ActionPlaying,
         artist_name = findViewById(R.id.song_artist);
         duration_played = findViewById(R.id.durationPlayed);
         duration_total = findViewById(R.id.durationTotal);
-        cover_art = findViewById(R.id.cover_art);
+//        cover_art = findViewById(R.id.cover_art);
         nextBtn = findViewById(R.id.id_next);
         prevBtn = findViewById(R.id.id_prev);
         backBtn = findViewById(R.id.id_prev);
@@ -241,6 +288,7 @@ public class PlayerActivity extends AppCompatActivity implements  ActionPlaying,
         repeatBtn = findViewById(R.id.id_repeat);
         playPauseBtn = findViewById(R.id.play_pause);
         seekBar = findViewById(R.id.seekBar);
+        viewPager2 = findViewById(R.id.playerViewpager);
     }
 
     //method used to update metadata of a new song
@@ -257,7 +305,7 @@ public class PlayerActivity extends AppCompatActivity implements  ActionPlaying,
         if (art!= null)
         {
             bitmap = BitmapFactory.decodeByteArray(art, 0, art.length); //calc color
-            ImageAnimation(this, cover_art, bitmap); //animation + background
+//            ImageAnimation(this, cover_art, bitmap); //animation + background
             Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                 @Override
                 public void onGenerated(@Nullable Palette palette) {
@@ -276,7 +324,7 @@ public class PlayerActivity extends AppCompatActivity implements  ActionPlaying,
             });
         }
         else {
-            Glide.with(getApplicationContext()).asBitmap().load(R.drawable.hehe).into(cover_art);
+//            Glide.with(getApplicationContext()).asBitmap().load(R.drawable.hehe).into(cover_art);
             ImageView img= (ImageView) findViewById(R.id.mContainerBackground);
             img.setImageResource(R.drawable.main_bg);
         }
@@ -323,7 +371,6 @@ public class PlayerActivity extends AppCompatActivity implements  ActionPlaying,
         metaData(uri);
         song_name.setText(listSongs.get(position).getTitle());
         artist_name.setText(listSongs.get(position).getArtist());
-
         musicService.onCompleted();
         musicService.showNotification(R.drawable.ic_pause);
     }

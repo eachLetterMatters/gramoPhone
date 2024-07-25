@@ -20,6 +20,7 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.view.WindowManager;
 
 import com.example.gramophone.activities.main.AlbumsFragment;
 import com.example.gramophone.activities.main.SongsFragment;
@@ -53,6 +54,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 //        getSupportActionBar().hide();
+        // make top notch black instead of default purple
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+
         setContentView(R.layout.activity_main);
         permission();
     }
@@ -85,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             {
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.READ_MEDIA_AUDIO}, 1);
-
             }
         }
     }

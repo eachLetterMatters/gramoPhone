@@ -3,12 +3,14 @@ package com.example.gramophone.activities.albumdetails;
 import static com.example.gramophone.MainActivity.musicFiles;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,6 +38,10 @@ public class AlbumDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);//usuniecie top bara
         getSupportActionBar().hide();//
+        // setting top notch color
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
 
         setContentView(R.layout.activity_album_details);
         recyclerView = findViewById(R.id.recyclerView);
