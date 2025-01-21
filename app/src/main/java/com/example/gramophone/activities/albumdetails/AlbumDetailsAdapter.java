@@ -88,13 +88,5 @@ public class AlbumDetailsAdapter extends RecyclerView.Adapter<AlbumDetailsAdapte
             album_name = itemView.findViewById(R.id.music_file_name);
         }
     }
-    private byte[] getAlbumArt(String uri) throws IOException {
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(uri);
-        byte[] art = retriever.getEmbeddedPicture();
-        retriever.release();
-        return art;
-    }
-
 
 }

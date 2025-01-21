@@ -49,10 +49,15 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
         String uri = viewPagerItem.getPath();
 
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(uri);
+        byte[] art = null;
+        try {
+            retriever.setDataSource(uri);
+            art = retriever.getEmbeddedPicture();  //background
+        } catch (Exception ex){
 
+        }
 //        holder.imageView.setImageResource(viewPagerItem.getPath());
-        byte[] art = retriever.getEmbeddedPicture();    //background
+//        byte[] art = retriever.getEmbeddedPicture();    //background
         Bitmap bitmap; //calculate color
 
         if (art!= null)

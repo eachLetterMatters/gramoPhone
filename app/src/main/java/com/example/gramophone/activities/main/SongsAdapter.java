@@ -94,16 +94,8 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.MyViewHolder
         }
     }
 
-    private byte[] getAlbumArt(String uri) throws IOException {
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(uri);
-        byte[] art = retriever.getEmbeddedPicture();
-        retriever.release();
-        return art;
-    }
-
     //change list of songs based on user input in search option
-    void updateList(ArrayList<MusicFile> musicFilesArrayList){
+    public void updateList(ArrayList<MusicFile> musicFilesArrayList){
         mFiles = new ArrayList<>();
         mFiles.addAll(musicFilesArrayList);
         notifyDataSetChanged();

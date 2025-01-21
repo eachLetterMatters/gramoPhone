@@ -1,8 +1,5 @@
 package com.example.gramophone.activities.main;
 
-import static com.example.gramophone.MainActivity.albums;
-import static com.example.gramophone.MainActivity.musicFiles;
-
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -15,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.gramophone.R;
+import com.example.gramophone.models.PlaylistManager;
 
 
 public class AlbumsFragment extends Fragment {
@@ -35,9 +33,9 @@ public class AlbumsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_albums, container, false);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
-        if(!(albums.size() < 1))
+        if(!(PlaylistManager.allAlbumFiles.size() < 1))
         {
-            albumAdapter = new AlbumsAdapter(getContext(), albums);
+            albumAdapter = new AlbumsAdapter(getContext(), PlaylistManager.allAlbumFiles);
             //albumAdapter = new MusicAdapter(getContext(), musicFiles);
             recyclerView.setAdapter(albumAdapter);
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));

@@ -1,7 +1,5 @@
 package com.example.gramophone.activities.main;
 
-import static com.example.gramophone.MainActivity.musicFiles;
-
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.gramophone.R;
+import com.example.gramophone.models.PlaylistManager;
 
 //  A Fragment represents a reusable portion of your app's UI. A fragment definesand
 //  manages its own layout, has its own lifecycle, and can handle its own input
@@ -40,9 +39,9 @@ public class SongsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_songs, container, false);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
-        if(!(musicFiles.size() < 1))
+        if(!(PlaylistManager.allSongFiles.size() < 1))
         {
-            songsAdapter = new SongsAdapter(getContext(), musicFiles);
+            songsAdapter = new SongsAdapter(getContext(), PlaylistManager.allSongFiles);
             recyclerView.setAdapter(songsAdapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL,false));
         }

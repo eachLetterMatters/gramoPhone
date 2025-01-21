@@ -1,7 +1,6 @@
 package com.example.gramophone.activities.player;
 
 import static com.example.gramophone.activities.albumdetails.AlbumDetailsAdapter.albumFiles;
-import static com.example.gramophone.MainActivity.musicFiles;
 import static com.example.gramophone.MainActivity.repeatBoolean;
 import static com.example.gramophone.MainActivity.shuffleBoolean;
 import static com.example.gramophone.activities.main.SongsAdapter.mFiles;

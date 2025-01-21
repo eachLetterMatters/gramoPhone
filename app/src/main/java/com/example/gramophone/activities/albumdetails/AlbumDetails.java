@@ -1,7 +1,5 @@
 package com.example.gramophone.activities.albumdetails;
 
-import static com.example.gramophone.MainActivity.musicFiles;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,9 +15,12 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.gramophone.R;
 import com.example.gramophone.models.MusicFile;
+import com.example.gramophone.models.PlaylistManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class AlbumDetails extends AppCompatActivity {
 
@@ -51,14 +52,18 @@ public class AlbumDetails extends AppCompatActivity {
         albumTitle.setText(albumName);
 
         int j = 0;
-        for (int i = 0; i < musicFiles.size(); i++)
+        for (int i = 0; i < PlaylistManager.allSongFiles.size(); i++)
         {
-            if(albumName.equals(musicFiles.get(i).getAlbum()))
+            if(albumName.equals(PlaylistManager.allSongFiles.get(i).getAlbum()))
             {
-                albumSongs.add(j, musicFiles.get(i));
+                albumSongs.add(j, PlaylistManager.allSongFiles.get(i));
                 j++;
             }
         }
+        // sort album songs per disc_number and then alphabetically
+        Comparator<MusicFile> comparator = Comparator.comparingInt(MusicFile::getDiscNumber).thenComparing(MusicFile::getTitle);
+        Collections.sort(albumSongs, comparator);
+
         byte[] image;
         try {
             image = getAlbumArt(albumSongs.get(0).getPath());
@@ -88,9 +93,13 @@ public class AlbumDetails extends AppCompatActivity {
 
     private byte[] getAlbumArt(String uri) throws IOException {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(uri);
-        byte[] art = retriever.getEmbeddedPicture();
-        retriever.release();
+        byte[] art = null;
+        try {
+            retriever.setDataSource(uri);
+            art = retriever.getEmbeddedPicture();
+            retriever.release();
+        }catch(Exception ex){
+        }
         return art;
     }
 

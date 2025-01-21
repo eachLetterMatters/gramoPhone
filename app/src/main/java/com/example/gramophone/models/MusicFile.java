@@ -7,13 +7,15 @@ public class MusicFile {
     private String artist;
     private String album;
     private String duration;
+    private int discNumber;
 
-    public MusicFile(String path, String title, String artist, String album, String duration) {
+    public MusicFile(String path, String title, String artist, String album, String duration, int discNumber) {
         this.path = path;
         this.title = title;
         this.artist = artist;
         this.album = album;
         this.duration = duration;
+        this.discNumber = discNumber;
     }
 
     public String getPath() {
@@ -55,5 +57,7 @@ public class MusicFile {
     public void setDuration(String duration) {
         this.duration = duration;
     }
+
+    public int getDiscNumber() {return discNumber;}
 
 }

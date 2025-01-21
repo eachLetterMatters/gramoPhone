@@ -45,11 +45,12 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.MyHolder> 
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, @SuppressLint("RecyclerView") int position) { //co robi to supress XD???
         holder.album_name.setText(albumFiles.get(position).getAlbum());
-        byte[] image;
+        byte[] image = null;
         try {
             image = getAlbumArt(albumFiles.get(position).getPath());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ignore) {
+//            throw new RuntimeException(e);
+
         }
 
         if (image != null)
@@ -100,9 +101,14 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.MyHolder> 
     }
     private byte[] getAlbumArt(String uri) throws IOException {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(uri);
-        byte[] art = retriever.getEmbeddedPicture();
-        retriever.release();
+        byte[] art = null;
+        try {
+            retriever.setDataSource(uri);
+            art = retriever.getEmbeddedPicture();
+            retriever.release();
+        }catch(Exception ex){
+
+        }
         return art;
     }
 }
